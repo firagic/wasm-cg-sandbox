@@ -1,0 +1,7 @@
+{
+    "title": "Hello Triangle",
+    "infos": "OpenGL: drawing the first triangle",
+    "asset": [
+       "triangle.wasm" 
+    ]
+}

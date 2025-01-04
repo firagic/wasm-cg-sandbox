@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Hello Triangle",
+        "path": "triangle.wasm",
+        "wasm": "modules/triangle.wasm",
+        "desc": " OpenGL: drawing the first triangle"
+    },
+    {
+        "name": "Hello Triangle 2",
+        "path": "triangle2.wasm",
+        "wasm": "modules/triangle.wasm",
+        "desc": " OpenGL: drawing the first triangle"    
+    },
+    {
+        "name": "Hello Triangle 3",
+        "path": "triangle3.wasm",
+        "wasm": "modules/triangle.wasm",
+        "desc": " OpenGL: drawing the first triangle"
+    },
+    {
+        "name": "Hello Triangle 4",
+        "path": "triangle4.wasm",
+        "wasm": "modules/triangle.wasm",
+        "desc": " OpenGL: drawing the first triangle"    
+    },
+    {
+        "name": "Hello Triangle 5",
+        "path": "triangle5.wasm",
+        "wasm": "modules/triangle.wasm",
+        "desc": " OpenGL: drawing the first triangle" 
+    }
+]
