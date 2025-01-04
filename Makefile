@@ -51,7 +51,7 @@ clean:
 	rm -rf ${ARTIFACT_DIR} 
 
 run:
-	python -m http.server -d $(ARTIFACT_DIR)
+	python3 -m http.server -d $(ARTIFACT_DIR)
 
 gen_dir:
 	mkdir ${ARTIFACT_DIR}

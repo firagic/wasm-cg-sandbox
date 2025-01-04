@@ -1,5 +1,5 @@
 #### OUTPUT
-ARTIFACT = triangle
+ARTIFACT = lightings 
 ARTIFACT_DIR = ../../../../build/modules/${ARTIFACT}
 ARTIFACT_BASE = $(ARTIFACT_DIR)/$(ARTIFACT)
 ARTIFACT_DATA = $(ARTIFACT_BASE).data
@@ -15,7 +15,7 @@ MODULES = ./assets/
 
 
 #### INPUT
-SOURCES = hello_triangle.cpp
+SOURCES = lightings.cpp
 
 
 #### FLAGS
