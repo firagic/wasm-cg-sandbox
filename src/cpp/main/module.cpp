@@ -58,6 +58,7 @@ void ModuleInterface::close_module(void * arg)
     module_state->module_start = NULL;
     module_state->module_run = NULL;
     module_state->module_end = NULL;
+    free(module_state);
     app_state->module_state = NULL;
 }
 

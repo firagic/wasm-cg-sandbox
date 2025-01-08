@@ -41,6 +41,7 @@ namespace ModuleInterface
         bool wasm_files_loaded;
         bool wasm_functions_linked;
         void * module_handle;
+        void * module_data;
 
         start_module module_start;
         run_module module_run;

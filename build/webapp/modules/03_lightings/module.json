@@ -1,0 +1,13 @@
+{
+    "title": "Lightings Example",
+    "infos": "Multiple Objects and Lighting",
+    "asset": [
+       "lightings.wasm",
+       "container2_specular.png",
+       "container2.png",
+       "light_cube.fs",
+       "light_cube.vs",
+       "multiple_lights.fs",
+       "multiple_lights.vs"
+    ]
+}

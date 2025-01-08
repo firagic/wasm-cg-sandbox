@@ -1,5 +1,5 @@
 #### OUTPUT
-ARTIFACT = lightings 
+ARTIFACT = lightings
 ARTIFACT_DIR = ../../../../build/modules/${ARTIFACT}
 ARTIFACT_BASE = $(ARTIFACT_DIR)/$(ARTIFACT)
 ARTIFACT_DATA = $(ARTIFACT_BASE).data
@@ -15,11 +15,15 @@ MODULES = ./assets/
 
 
 #### INPUT
+GLM_DIR:=./glm
+LODEPNG_DIR=./lodepng
 SOURCES = lightings.cpp
+SOURCES += $(LODEPNG_DIR)/lodepng.cpp
 
 
 #### FLAGS
 LIBS = -lGL
+HEADERS = -I$(GLM_DIR) -I${LODEPNG_DIR}
 WEBGL_VER = -s USE_WEBGL2=1 -s USE_GLFW=3 -s FULL_ES3=1
 USE_WASM = -s WASM=1
 EXPORTS = -s EXPORT_ALL=1
@@ -31,7 +35,7 @@ PRELOADS = --preload-file ./assets
 CXX = emcc -std=c++11 -O2
 INPUT = $(SOURCES)
 OUTPUT = -o $(ARTIFACT_WASM)
-FLAGS = $(LIBS) $(WEBGL_VER) $(USE_WASM) $(DYNLINK_SIDE) $(EXPORTS)
+FLAGS = $(LIBS) $(HEADERS) $(WEBGL_VER) $(USE_WASM) $(DYNLINK_SIDE) $(EXPORTS)
 
 
 
