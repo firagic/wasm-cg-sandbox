@@ -12,6 +12,7 @@ void ModuleInterface::open_module(void * arg)
     module_state->wasm_files_loaded = false;
     module_state->wasm_functions_linked = false;
     app_state->module_state = module_state;
+    module_state->app_state = app_state;
     EMJS_WASM::load_wasm_js(app_state->selected_item);
 }
 
@@ -58,6 +59,7 @@ void ModuleInterface::close_module(void * arg)
     module_state->module_start = NULL;
     module_state->module_run = NULL;
     module_state->module_end = NULL;
+    module_state->app_state = NULL;
     free(module_state);
     app_state->module_state = NULL;
 }

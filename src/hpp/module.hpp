@@ -49,6 +49,8 @@ namespace ModuleInterface
 
         ModuleStatus module_status;
 
+        void * app_state;
+
     } ModuleState;
 
 
