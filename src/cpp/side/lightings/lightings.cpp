@@ -8,8 +8,21 @@ extern "C" int end_module(void *arg);
 int start_module(void *arg)
 {
     ModuleInterface::ModuleState* state = (ModuleInterface::ModuleState*)arg;
+    AppState * app_state = (AppState*) state->app_state;
     ModuleData* moduleDataPtr = (ModuleData*)malloc(sizeof(ModuleData));
     state->module_data = moduleDataPtr;
+
+
+    moduleDataPtr->camera = new Camera (glm::vec3(0.0f, 0.0f, 3.0f));
+    moduleDataPtr->lastX = app_state->display_width / 2.0f;
+    moduleDataPtr->lastY = app_state->display_height / 2.0f;
+    moduleDataPtr->firstMouse = true;
+    moduleDataPtr->deltaTime = 0.0f;
+    moduleDataPtr->lastFrame = 0.0f;
+    moduleDataPtr->lightPos = (void *) (new glm::vec3(1.2f, 1.0f, 2.0f));
+    moduleDataPtr->window = app_state->g_window;
+
+
 
 
     // // glfw: initialize and configure
@@ -177,6 +190,8 @@ int start_module(void *arg)
 int run_module(void *arg) 
 {
     ModuleInterface::ModuleState* state = (ModuleInterface::ModuleState*) arg;
+    AppState * app_state = (AppState*) state->app_state;
+
     ModuleData * moduleDataPtr = (ModuleData*) (state->module_data);
 
     // std::cout << "shader program id running: " << moduleDataPtr->lightingShaderID << std::endl;
@@ -190,12 +205,12 @@ int run_module(void *arg)
         // per-frame time logic
         // --------------------
         float currentFrame = static_cast<float>(glfwGetTime());
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+        moduleDataPtr->deltaTime = currentFrame - moduleDataPtr->lastFrame;
+        moduleDataPtr->lastFrame = currentFrame;
 
         // input
         // -----
-        // processInput(window);
+        processInput(state);
 
         // render
         // ------
@@ -205,7 +220,7 @@ int run_module(void *arg)
         // be sure to activate shader when setting uniforms/drawing objects
         // moduleDataPtr->lightingShader.use();
         use_shader(moduleDataPtr->lightingShaderID);
-        set_vec3(moduleDataPtr->lightingShaderID, "viewPos", camera.Position);
+        set_vec3(moduleDataPtr->lightingShaderID, "viewPos", moduleDataPtr->camera->Position);
         set_float(moduleDataPtr->lightingShaderID, "material.shininess", 32.0f);
 
 
@@ -253,8 +268,8 @@ int run_module(void *arg)
         set_float(moduleDataPtr->lightingShaderID, "pointLights[3].linear", 0.09f);
         set_float(moduleDataPtr->lightingShaderID, "pointLights[3].quadratic", 0.032f);
         // spotLight
-        set_vec3(moduleDataPtr->lightingShaderID, "spotLight.position", camera.Position);
-        set_vec3(moduleDataPtr->lightingShaderID, "spotLight.direction", camera.Front);
+        set_vec3(moduleDataPtr->lightingShaderID, "spotLight.position", moduleDataPtr->camera->Position);
+        set_vec3(moduleDataPtr->lightingShaderID, "spotLight.direction", moduleDataPtr->camera->Front);
         set_vec3(moduleDataPtr->lightingShaderID, "spotLight.ambient", 0.0f, 0.0f, 0.0f);
         set_vec3(moduleDataPtr->lightingShaderID, "spotLight.diffuse", 1.0f, 1.0f, 1.0f);
         set_vec3(moduleDataPtr->lightingShaderID, "spotLight.specular", 1.0f, 1.0f, 1.0f);
@@ -265,8 +280,8 @@ int run_module(void *arg)
         set_float(moduleDataPtr->lightingShaderID, "spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));     
 
         // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(glm::radians(moduleDataPtr->camera->Zoom), (float) app_state->display_width / (float) app_state->canvas_height, 0.1f, 100.0f);
+        glm::mat4 view = moduleDataPtr->camera->GetViewMatrix();
         set_mat4(moduleDataPtr->lightingShaderID, "projection", projection);
         set_mat4(moduleDataPtr->lightingShaderID, "view", view);
 
@@ -342,19 +357,32 @@ int end_module(void *arg)
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
+void processInput(void * arg)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+    ModuleInterface::ModuleState* state = (ModuleInterface::ModuleState*) arg;
+    ModuleData * moduleDataPtr = (ModuleData*) (state->module_data);
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+    GLFWwindow* window = moduleDataPtr->window;
+    Camera * camera = moduleDataPtr->camera;
+    // if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    //     glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        camera->ProcessKeyboard(FORWARD, moduleDataPtr->deltaTime);
+        // std::cout << "W Pressed" << std::endl;
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        camera->ProcessKeyboard(BACKWARD, moduleDataPtr->deltaTime);
+        // std::cout << "S Pressed" << std::endl;
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        camera->ProcessKeyboard(LEFT, moduleDataPtr->deltaTime);
+        // std::cout << "A Pressed" << std::endl;
+    }    
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        camera->ProcessKeyboard(RIGHT, moduleDataPtr->deltaTime);
+        // std::cout << "D Pressed" << std::endl;    
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -368,33 +396,33 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
-{
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
+// void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+// {
+//     float xpos = static_cast<float>(xposIn);
+//     float ypos = static_cast<float>(yposIn);
 
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
+//     if (firstMouse)
+//     {
+//         lastX = xpos;
+//         lastY = ypos;
+//         firstMouse = false;
+//     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+//     float xoffset = xpos - lastX;
+//     float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-    lastX = xpos;
-    lastY = ypos;
+//     lastX = xpos;
+//     lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
-}
+//     camera.ProcessMouseMovement(xoffset, yoffset);
+// }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-    camera.ProcessMouseScroll(static_cast<float>(yoffset));
-}
+// void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+// {
+//     camera.ProcessMouseScroll(static_cast<float>(yoffset));
+// }
 
 // utility function for loading a 2D texture from file
 // ---------------------------------------------------

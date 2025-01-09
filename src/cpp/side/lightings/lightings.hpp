@@ -295,36 +295,31 @@ private:
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void processInput(GLFWwindow *window);
+void processInput(void * arg);
 unsigned int loadTexture(const char *path);
 unsigned char* load_png(const char* filename, int* width, int* height, int* nrComponents);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+// const unsigned int SCR_WIDTH = 800;
+// const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
-bool firstMouse = true;
+// Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+// float lastX = SCR_WIDTH / 2.0f;
+// float lastY = SCR_HEIGHT / 2.0f;
+// bool firstMouse = true;
 
 // timing
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
+// float deltaTime = 0.0f;
+// float lastFrame = 0.0f;
 
 // lighting
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+// glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 
 
 typedef struct   
 {
-// public:
-    // ModuleData();
-    // ~ModuleData();
-    // Shader lightingShader;
-    // Shader lightCubeShader;
     unsigned int lightingShaderID;
     unsigned int lightCubeShaderID;
     unsigned int cubeVAO;
@@ -334,9 +329,25 @@ typedef struct
     unsigned int diffuseMap;
     unsigned int specularMap;
 
+    // lighting
     // glm::vec3 * pointLightPositions;
     // glm::vec3 * cubePositions;
     void * pointLightPositions;
     void * cubePositions;
+    void * lightPos;
+
+    // camera
+    Camera * camera;
+    float lastX;
+    float lastY;
+    bool firstMouse;
+
+    // timing
+    float deltaTime;
+    float lastFrame;
+    
+    GLFWwindow * window;
+
+
 
 } ModuleData;
