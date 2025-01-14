@@ -1,0 +1,17 @@
+{
+    "title": "Loading Model Example",
+    "infos": "Process and Load OBJ Model",
+    "asset": [
+       "process_models.wasm",
+       "model_loading.fs",
+       "model_loading.vs",
+       "ao.jpg",
+       "backpack.mtl",
+       "backpack.obj",
+       "diffuse.jpg",
+       "normal.png",
+       "roughness.jpg",
+       "source_attribution.txt",
+       "specular.jpg"
+    ]
+}
