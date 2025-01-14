@@ -57,7 +57,6 @@ private:
         std::vector<tinyobj::shape_t> shapes;
         std::vector<tinyobj::material_t> materials;
         std::string warn, err;
-        std::cout << "DEBUG LOAD MODEL 1" << std::endl;
 
         bool success = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), directory.c_str());
         if (!warn.empty()) {
@@ -74,10 +73,8 @@ private:
         // Retrieve the directory path of the file
         directory = path.substr(0, path.find_last_of('/'));
 
-        std::cout << "DEBUG LOAD MODEL 2" << std::endl;
         // Process each shape (equivalent to nodes)
         for (size_t i = 0; i < shapes.size(); i++) {
-            std::cout << "DEBUG LOAD MODEL 2 - " << i  << "|" << shapes.size() << std::endl;
             processShape(shapes[i], attrib, materials);
         }
     }
