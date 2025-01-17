@@ -100,7 +100,19 @@ void Gui::show_list_window(void *arg)
     // json* module_list_json_obj = (json*) state->module_list;
 
     // Begin a new ImGui window
-    ImGui::Begin("Examples Window");
+    ImVec2 first_window_pos = ImGui::GetWindowPos();
+    ImVec2 first_window_size = ImGui::GetWindowSize();
+
+    // Calculate the position for the second window (below the first window)
+    ImVec2 second_window_pos = ImVec2(
+        first_window_pos.x,                      // Same X position
+        first_window_pos.y + first_window_size.y // Y position just below
+    );
+
+    // Example window
+    ImGui::SetNextWindowPos(second_window_pos);
+    ImGui::SetNextWindowSize(ImVec2(300, 200));   ImGui::SetNextWindowSize(ImVec2(400, 300));
+    ImGui::Begin("Examples");
 
 
     // Begin the ListBox
