@@ -1,0 +1,7 @@
+{
+    "title": "Endless Grid Example",
+    "infos": "Rendering an infinite grid as ground plane",
+    "asset": [
+       "endless_grid.wasm"
+    ]
+}
