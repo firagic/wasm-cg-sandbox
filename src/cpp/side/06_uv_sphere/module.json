@@ -1,0 +1,7 @@
+{
+    "title": "Template Example",
+    "infos": "Module template and boiler code to create side wasm module for CG sandbox",
+    "asset": [
+       "template.wasm"
+    ]
+}
