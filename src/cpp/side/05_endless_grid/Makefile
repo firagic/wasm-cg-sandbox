@@ -1,6 +1,6 @@
 #### OUTPUT
 EXAMPLE_NUMBER = 05_
-ARTIFACT = endless_grid 
+ARTIFACT = endless_grid
 ARTIFACT_DIR = ../../../../build/modules/${EXAMPLE_NUMBER}${ARTIFACT}
 ARTIFACT_BASE = $(ARTIFACT_DIR)/$(ARTIFACT)
 ARTIFACT_DATA = $(ARTIFACT_BASE).data
@@ -19,7 +19,7 @@ MODULES = ./assets/
 GLM_DIR:=./glm
 LODEPNG_DIR=./lodepng
 SOURCES = ${ARTIFACT}.cpp
-SOURCES += $(LODEPNG_DIR)/lodepng.cpp
+#SOURCES += $(LODEPNG_DIR)/lodepng.cpp
 
 
 #### FLAGS
