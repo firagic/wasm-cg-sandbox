@@ -77,6 +77,8 @@ int end_module(void *arg)
     ModuleInterface::ModuleState* state = (ModuleInterface::ModuleState*) arg;
     ModuleData * moduleDataPtr = (ModuleData*) (state->module_data);
 
+    free(moduleDataPtr);
+
     return 0;
 }
 

@@ -17,14 +17,14 @@ MODULES = ./assets/
 
 #### INPUT
 GLM_DIR:=./glm
-LODEPNG_DIR=./lodepng
+#LODEPNG_DIR=./lodepng
 SOURCES = ${ARTIFACT}.cpp
 #SOURCES += $(LODEPNG_DIR)/lodepng.cpp
 
 
 #### FLAGS
 LIBS = -lGL
-HEADERS = -I$(GLM_DIR) -I${LODEPNG_DIR}
+HEADERS = -I$(GLM_DIR) 
 WEBGL_VER = -s USE_WEBGL2=1 -s USE_GLFW=3 -s FULL_ES3=1
 USE_WASM = -s WASM=1
 EXPORTS = -s EXPORT_ALL=1

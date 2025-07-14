@@ -111,12 +111,13 @@ void Gui::show_list_window(void *arg)
 
     // Example window
     ImGui::SetNextWindowPos(second_window_pos);
-    ImGui::SetNextWindowSize(ImVec2(300, 200));   ImGui::SetNextWindowSize(ImVec2(400, 300));
+    // ImGui::SetNextWindowSize(ImVec2(300, 200));   
+    ImGui::SetNextWindowSize(ImVec2(400, 300));
     ImGui::Begin("Examples");
 
 
     // Begin the ListBox
-    if (ImGui::BeginListBox("ListBox", ImVec2(-FLT_MIN, 5 * ImGui::GetTextLineHeightWithSpacing())))
+    if (ImGui::BeginListBox("ListBox", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
     {
         // for (int i = 0; i < module_list_json_obj->size(); i++)
         for (int i = 0; i < state->module_names->size(); i++)

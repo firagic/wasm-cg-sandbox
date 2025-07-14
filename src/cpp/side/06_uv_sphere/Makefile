@@ -17,16 +17,20 @@ MODULES = ./assets/
 
 #### INPUT
 GLM_DIR:=./glm
+#IMGUI_DIR:=../../../../../imgui
 #LODEPNG_DIR=./lodepng
 SOURCES = 
 SOURCES += ${ARTIFACT}.cpp
 #SOURCES += $(LODEPNG_DIR)/lodepng.cpp
+#SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
+#SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_widgets.cpp $(IMGUI_DIR)/imgui_tables.cpp
 
 #### FLAGS: LIBS AND HEADERS
 LIBS =
 LIBS += -lGL
 HEADERS =
 HEADERS += -I$(GLM_DIR) 
+#HEADERS += -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
 #HEADERS += -I${LODEPNG_DIR}
 
 #### FLAGS: OTHERS
@@ -39,7 +43,7 @@ MEM_GROWTH = -sALLOW_MEMORY_GROWTH=1
 
 
 #### PARAMS
-CXX = emcc -std=c++11 -O2
+CXX = emcc -std=c++17 -O2
 INPUT = $(SOURCES)
 OUTPUT = -o $(ARTIFACT_WASM)
 FLAGS = $(LIBS) $(HEADERS) $(WEBGL_VER) $(USE_WASM) $(DYNLINK_SIDE) $(EXPORTS) ${MEM_GROWTH}
