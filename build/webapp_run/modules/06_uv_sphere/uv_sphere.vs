@@ -1,17 +1,15 @@
 #version 300 es
 precision highp float;
 
-
 uniform mat4 view;
 uniform mat4 projection;
 
-
 uniform float sectors;
 uniform float stacks;
-// const int SECTORS = 24;
-// const int STACKS = 18;
+
 const float PI = 3.1415926;
 const float HALF_PI = 1.5707963;
+
 out vec2 vUV;
 
 void main() {

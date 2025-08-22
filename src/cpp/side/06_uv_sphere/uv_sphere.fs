@@ -2,13 +2,14 @@
 precision highp float;
 
 in vec2 vUV;
+
 out vec4 FragColor;
 
-const float sectors = 24.0;
-const float stacks = 18.0;
+uniform float sectors;
+uniform float stacks;
 
 float edgeFactor() {
-    vec2 d = fwidth(vUV);                         // pixel-space derivative
+    vec2 d = fwidth(vUV); // pixel-space derivative
     vec2 grid = fract(vUV * vec2(sectors, stacks));
 
     // Thicker line by using larger multiplier

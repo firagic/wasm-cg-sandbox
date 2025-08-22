@@ -1,50 +1,49 @@
 #version 300 es
 precision highp float;
 
-
 uniform mat4 view;
 uniform mat4 projection;
 
-const int sectors = 24;  // 24 longitude divisions (time zones)
-const int stacks = 18;   // latitude divisions
-const float PI = 3.1415926;
+uniform float sectors;
+uniform float stacks;
 
-out vec3 vNormal;
+const float PI = 3.1415926;
+const float HALF_PI = 1.5707963;
+
+out vec2 vUV;
 
 void main() {
-    int vertId = gl_VertexID;
+    int vertexId = gl_VertexID;
+    int quadId = vertexId / 6;
+    int triId = vertexId % 6;
 
-    int quadId = vertId / 6;      // which quad (stack, sector)
-    int triId = vertId % 6;       // vertex within two triangles
-
-    int stack = quadId / sectors;
-    int sector = quadId % sectors;
-
-    vec2 uv[6];
+    int stack = quadId / int(sectors);
+    int sector = quadId % int(sectors);
 
     float u0 = float(sector) / float(sectors);
     float u1 = float(sector + 1) / float(sectors);
     float v0 = float(stack) / float(stacks);
     float v1 = float(stack + 1) / float(stacks);
 
+    vec2 uv[6];
     uv[0] = vec2(u0, v0);
     uv[1] = vec2(u1, v0);
     uv[2] = vec2(u1, v1);
-
     uv[3] = vec2(u0, v0);
     uv[4] = vec2(u1, v1);
     uv[5] = vec2(u0, v1);
 
-    vec2 uvCoord = uv[triId];
+    vUV = uv[triId];
 
-    float lat = mix(-0.5 * PI, 0.5 * PI, uvCoord.y); // -π/2 to π/2
-    float lon = mix(-PI, PI, uvCoord.x);             // -π to π
+    float lat = mix(-HALF_PI, HALF_PI, vUV.y);
+    float lon = mix(-PI, PI, vUV.x);
 
-    float x = cos(lat) * cos(lon);
-    float y = sin(lat);
-    float z = cos(lat) * sin(lon);
-    vec3 pos = vec3(x, y, z);
+    // Convert spherical coordinates (lat, lon) to Cartesian coordinates (x, y, z)
+    vec3 pos = vec3(
+        cos(lat) * cos(lon),
+        sin(lat),
+        cos(lat) * sin(lon)
+    );
 
-    vNormal = normalize(pos);
     gl_Position = projection * view * vec4(pos, 1.0);
 }
