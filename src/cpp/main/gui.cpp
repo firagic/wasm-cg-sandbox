@@ -1,4 +1,5 @@
 #define __GUI__
+#define __GUI_EXTERN__
 #include "../../hpp/globals.hpp"
 
 /*
@@ -40,18 +41,25 @@ void Gui::set_gui_context()
 
 void Gui::render_gui_data()
 {
+    ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+void Gui::begin_gui_frame()
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+}
 
 void Gui::draw_gui_data(void *arg)
 {
     AppState* state = (AppState*)arg;
 
-
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+    
+    // ImGui_ImplOpenGL3_NewFrame();
+    // ImGui_ImplGlfw_NewFrame();
+    // ImGui::NewFrame();
 
     // 1. Show a simple window.
     // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
@@ -91,7 +99,7 @@ void Gui::draw_gui_data(void *arg)
         ImGui::ShowDemoWindow(&state->show_demo_window);
     }
 
-    ImGui::Render();
+    // ImGui::Render();
 }
 
 void Gui::show_list_window(void *arg)
@@ -146,4 +154,83 @@ void Gui::show_list_window(void *arg)
     // End the window
     ImGui::End();
 }
+
+// ================================
+// C-ABI ImGui export implementations
+// ================================
+#if defined(__EMSCRIPTEN__)
+  #include <emscripten.h>
+  #define KEEPALIVE EMSCRIPTEN_KEEPALIVE
+#else
+  #define KEEPALIVE
+#endif
+
+extern "C" {
+
+// Frame lifecycle
+KEEPALIVE void igNewFrame(void) { ImGui::NewFrame(); }
+KEEPALIVE void igEndFrame(void) { ImGui::EndFrame(); }
+KEEPALIVE void igRender(void)   { ImGui::Render(); }
+
+// Windows
+KEEPALIVE void igBegin(const char* name) { ImGui::Begin(name); }
+KEEPALIVE void igEnd(void)               { ImGui::End(); }
+
+// Text & Labels
+KEEPALIVE void igText(const char* text)        { ImGui::Text("%s", text); }
+KEEPALIVE void igTextWrapped(const char* text) { ImGui::TextWrapped("%s", text); }
+KEEPALIVE void igLabelText(const char* label, const char* text) { ImGui::LabelText(label, "%s", text); }
+
+// Widgets
+KEEPALIVE bool igButton(const char* label) { return ImGui::Button(label); }
+KEEPALIVE bool igCheckbox(const char* label, bool* v) { return ImGui::Checkbox(label, v); }
+KEEPALIVE bool igRadioButton(const char* label, bool active) { return ImGui::RadioButton(label, active); }
+KEEPALIVE bool igSliderFloat(const char* label, float* v, float v_min, float v_max) { return ImGui::SliderFloat(label, v, v_min, v_max); }
+KEEPALIVE bool igSliderInt(const char* label, int* v, int v_min, int v_max) { return ImGui::SliderInt(label, v, v_min, v_max); }
+KEEPALIVE bool igInputText(const char* label, char* buf, unsigned int buf_size) { return ImGui::InputText(label, buf, buf_size); }
+
+// Layout
+KEEPALIVE void igSameLine(void) { ImGui::SameLine(); }
+KEEPALIVE void igSeparator(void){ ImGui::Separator(); }
+KEEPALIVE void igSpacing(void)  { ImGui::Spacing(); }
+KEEPALIVE void igIndent(void)   { ImGui::Indent(); }
+KEEPALIVE void igUnindent(void) { ImGui::Unindent(); }
+KEEPALIVE void igSetNextWindowSize(float w, float h) { ImGui::SetNextWindowSize(ImVec2(w, h)); }
+KEEPALIVE void igSetNextWindowPos(float x, float y)  { ImGui::SetNextWindowPos(ImVec2(x, y)); }
+
+// Menus & Popups
+KEEPALIVE bool igBeginMenuBar(void) { return ImGui::BeginMenuBar(); }
+KEEPALIVE void igEndMenuBar(void)   { ImGui::EndMenuBar(); }
+KEEPALIVE bool igBeginMenu(const char* label, bool enabled) { return ImGui::BeginMenu(label, enabled); }
+KEEPALIVE void igEndMenu(void)      { ImGui::EndMenu(); }
+KEEPALIVE bool igMenuItem(const char* label, const char* shortcut, bool selected, bool enabled) { return ImGui::MenuItem(label, shortcut, selected, enabled); }
+KEEPALIVE void igOpenPopup(const char* str_id) { ImGui::OpenPopup(str_id); }
+KEEPALIVE bool igBeginPopup(const char* str_id) { return ImGui::BeginPopup(str_id); }
+KEEPALIVE void igEndPopup(void) { ImGui::EndPopup(); }
+
+// Tabs & Trees
+KEEPALIVE bool igBeginTabBar(const char* str_id) { return ImGui::BeginTabBar(str_id); }
+KEEPALIVE void igEndTabBar(void) { ImGui::EndTabBar(); }
+KEEPALIVE bool igBeginTabItem(const char* label) { return ImGui::BeginTabItem(label); }
+KEEPALIVE void igEndTabItem(void) { ImGui::EndTabItem(); }
+KEEPALIVE bool igTreeNode(const char* label) { return ImGui::TreeNode(label); }
+KEEPALIVE void igTreePop(void) { ImGui::TreePop(); }
+KEEPALIVE bool igCollapsingHeader(const char* label) { return ImGui::CollapsingHeader(label); }
+
+// Tables
+KEEPALIVE bool igBeginTable(const char* str_id, int columns) { return ImGui::BeginTable(str_id, columns); }
+KEEPALIVE void igEndTable(void) { ImGui::EndTable(); }
+KEEPALIVE void igTableNextRow(void) { ImGui::TableNextRow(); }
+KEEPALIVE bool igTableNextColumn(void) { return ImGui::TableNextColumn(); }
+KEEPALIVE bool igTableSetColumnIndex(int column_index) { return ImGui::TableSetColumnIndex(column_index); }
+
+// Utilities
+KEEPALIVE bool igIsItemHovered(void) { return ImGui::IsItemHovered(); }
+KEEPALIVE bool igIsItemClicked(void) { return ImGui::IsItemClicked(); }
+KEEPALIVE bool igIsWindowFocused(void) { return ImGui::IsWindowFocused(); }
+KEEPALIVE void igGetMousePos(float* out_x, float* out_y) { ImVec2 p = ImGui::GetMousePos(); *out_x = p.x; *out_y = p.y; }
+KEEPALIVE void igPushID(const char* str_id) { ImGui::PushID(str_id); }
+KEEPALIVE void igPopID(void) { ImGui::PopID(); }
+
+} // extern "C"
 

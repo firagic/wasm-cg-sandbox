@@ -9,6 +9,8 @@ ARTIFACT_JS = $(ARTIFACT_BASE).js
 ARTIFACT_HTML = resources/htmls/index.html
 MODULES_JSON = resources/json/modules.json 
 
+ARTIFACT_WASM_DEPLOY_PATH = ${ARTIFACT_DIR}_run/app.wasm
+ARTIFACT_JS_DEPLOY_PATH = ${ARTIFACT_DIR}_run/app.js
 
 
 ### MODULES
@@ -45,9 +47,9 @@ FLAGS = $(LIBS) $(HEADERS) $(WEBGL_VER) $(USE_WASM) $(PRELOADS) $(DYNLINK_MAIN) 
 
 
 #### RULES 
-all: clean $(ARTIFACT_DIR)
+all: clean gen_dir gen_module_dir copy_resources $(ARTIFACT_DIR)
 
-$(ARTIFACT_DIR): gen_dir gen_module_dir copy_resources
+$(ARTIFACT_DIR):
 	$(CXX) $(INPUT) $(OUTPUT) $(FLAGS)
 
 clean:
@@ -65,3 +67,7 @@ gen_module_dir:
 copy_resources:
 	cp $(ARTIFACT_HTML) ${ARTIFACT_DIR}
 	cp $(MODULES_JSON) $(ARTIFACT_DIR)
+
+deploy:
+	cp ${ARTIFACT_WASM} ${ARTIFACT_WASM_DEPLOY_PATH}
+	cp ${ARTIFACT_JS} ${ARTIFACT_JS_DEPLOY_PATH}

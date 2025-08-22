@@ -4,8 +4,12 @@ precision highp float;
 in vec2 vUV;
 out vec4 FragColor;
 
-const float sectors = 24.0;
-const float stacks = 18.0;
+// const float sectors = 24.0;
+// const float stacks = 18.0;
+uniform float sectors;
+uniform float stacks;
+
+
 
 float edgeFactor() {
     vec2 d = fwidth(vUV);                         // pixel-space derivative

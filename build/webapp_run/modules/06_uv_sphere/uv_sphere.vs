@@ -5,8 +5,11 @@ precision highp float;
 uniform mat4 view;
 uniform mat4 projection;
 
-const int SECTORS = 24;
-const int STACKS = 18;
+
+uniform float sectors;
+uniform float stacks;
+// const int SECTORS = 24;
+// const int STACKS = 18;
 const float PI = 3.1415926;
 const float HALF_PI = 1.5707963;
 out vec2 vUV;
@@ -16,13 +19,13 @@ void main() {
     int quadId = vertexId / 6;
     int triId = vertexId % 6;
 
-    int stack = quadId / SECTORS;
-    int sector = quadId % SECTORS;
+    int stack = quadId / int(sectors);
+    int sector = quadId % int(sectors);
 
-    float u0 = float(sector) / float(SECTORS);
-    float u1 = float(sector + 1) / float(SECTORS);
-    float v0 = float(stack) / float(STACKS);
-    float v1 = float(stack + 1) / float(STACKS);
+    float u0 = float(sector) / float(sectors);
+    float u1 = float(sector + 1) / float(sectors);
+    float v0 = float(stack) / float(stacks);
+    float v1 = float(stack + 1) / float(stacks);
 
     vec2 uv[6];
     uv[0] = vec2(u0, v0);

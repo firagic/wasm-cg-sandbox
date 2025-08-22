@@ -18,6 +18,8 @@ int start_module(void *arg)
     moduleDataPtr->deltaTime = 0.0f;
     moduleDataPtr->lastFrame = 0.0f;
     moduleDataPtr->window = app_state->g_window;
+    moduleDataPtr->lat_zone_count = 8;
+    moduleDataPtr->long_zone_count = 12;
 
     moduleDataPtr->infinity_plane_shader = new Shader("infinity_plane.vs", "infinity_plane.fs"); 
     moduleDataPtr->uv_sphere_shader = new Shader("uv_sphere.vs", "uv_sphere.fs"); 
@@ -34,7 +36,6 @@ int run_module(void *arg)
 
     ModuleData * moduleDataPtr = (ModuleData*) (state->module_data);
 
-
     // -----------
     // per-frame time logic
     // --------------------
@@ -44,7 +45,7 @@ int run_module(void *arg)
     
     // input
     // -----
-    processInput(state);
+    process_input(state);
     
     // render
     // ------
@@ -73,9 +74,15 @@ int run_module(void *arg)
     moduleDataPtr->uv_sphere_shader->use();
     moduleDataPtr->uv_sphere_shader->setMat4("projection", projection);
     moduleDataPtr->uv_sphere_shader->setMat4("view", view); 
+    moduleDataPtr->uv_sphere_shader->setFloat("sectors", moduleDataPtr->long_zone_count);
+    moduleDataPtr->uv_sphere_shader->setFloat("stacks", moduleDataPtr->lat_zone_count);
+
 
     glDrawArrays(GL_TRIANGLES, 0, 24 * 18 * 6);
     glDisable(GL_BLEND);
+
+    // gui
+    render_module_gui(state);
 
     return 0;
 }
@@ -92,7 +99,7 @@ int end_module(void *arg)
 }
 
 
-void processInput(void* arg) 
+void process_input(void* arg) 
 {
     static const std::unordered_map<int, Camera_Movement> keyMovementMap = {
         {GLFW_KEY_R     , Camera_Movement::UP},
@@ -117,3 +124,18 @@ void processInput(void* arg)
         }
     }
 }
+
+void render_module_gui(void* arg) {
+
+    ModuleInterface::ModuleState* state = (ModuleInterface::ModuleState*) arg;
+    ModuleData * moduleDataPtr = (ModuleData*) (state->module_data);
+
+    igSetNextWindowPos(((AppState*) state->app_state)->canvas_width - 300, 0);
+    igSetNextWindowSize(300, 200);
+    
+    igBegin("Config");
+    igSliderInt("Latitude", &moduleDataPtr->lat_zone_count, 8, 16);
+    igSliderInt("Longtitude", &moduleDataPtr->long_zone_count, 12, 24);
+    igEnd();
+};
+

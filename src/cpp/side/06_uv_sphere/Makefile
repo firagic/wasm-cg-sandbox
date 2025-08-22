@@ -8,6 +8,7 @@ ARTIFACT_WASM = $(ARTIFACT_BASE).wasm
 ARTIFACT_JS = $(ARTIFACT_BASE).js
 ARTIFACT_HTML = htmls/index.html
 
+DEPLOY_PATH = ../../../../build/webapp_run/modules/${EXAMPLE_NUMBER}${ARTIFACT}/${ARTIFACT}.wasm
 
 
 ### WASM MODULES
@@ -51,9 +52,9 @@ FLAGS = $(LIBS) $(HEADERS) $(WEBGL_VER) $(USE_WASM) $(DYNLINK_SIDE) $(EXPORTS) $
 
 
 #### RULES 
-all: clean $(ARTIFACT)
+all: clean gen_dir $(ARTIFACT)
 
-$(ARTIFACT): gen_dir
+$(ARTIFACT): 
 	$(CXX) $(INPUT) $(OUTPUT) $(FLAGS)
 
 clean:
@@ -64,3 +65,6 @@ run:
 
 gen_dir:
 	mkdir ${ARTIFACT_DIR}
+
+deploy:
+	cp $(ARTIFACT_WASM) ${DEPLOY_PATH} 

@@ -36,10 +36,13 @@ void App::loop(void *arg)
     // glClearColor(state->clear_color.x, state->clear_color.y, state->clear_color.z, state->clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    Gui::begin_gui_frame();
+
     ModuleInterface::exec_module(state);
 
     Gui::draw_gui_data(state);
     Gui::render_gui_data();
+    
 
     glfwMakeContextCurrent(state->g_window);
 }

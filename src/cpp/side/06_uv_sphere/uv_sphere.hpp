@@ -1,4 +1,5 @@
 #define __MODULE_INTERFACE__
+#define __GUI_EXTERN__
 #include "../../../hpp/globals.hpp"
 #include <unordered_map>
 
@@ -13,7 +14,8 @@ extern "C" int start_module(void *arg);
 extern "C" int run_module(void *arg);
 extern "C" int end_module(void *arg);
 
-void processInput(void * arg);
+void render_module_gui(void* arg); 
+void process_input(void * arg);
 
 class ModuleData  
 {
@@ -33,8 +35,12 @@ public:
     // timing
     float deltaTime;
     float lastFrame;
+
+    int long_zone_count;
+    int lat_zone_count;
     
     GLFWwindow * window;
+
 
 
 };
