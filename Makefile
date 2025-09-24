@@ -47,9 +47,10 @@ FLAGS = $(LIBS) $(HEADERS) $(WEBGL_VER) $(USE_WASM) $(PRELOADS) $(DYNLINK_MAIN) 
 
 
 #### RULES 
-all: clean gen_dir gen_module_dir copy_resources $(ARTIFACT_DIR)
+all: clean gen_dir gen_module_dir copy_resources main_module
 
-$(ARTIFACT_DIR):
+main_module:
+	echo "Compiling to WASM..."
 	$(CXX) $(INPUT) $(OUTPUT) $(FLAGS)
 
 clean:

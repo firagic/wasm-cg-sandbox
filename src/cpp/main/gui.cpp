@@ -60,7 +60,7 @@ void Gui::draw_gui_data(void *arg)
     // ImGui_ImplOpenGL3_NewFrame();
     // ImGui_ImplGlfw_NewFrame();
     // ImGui::NewFrame();
-
+    ImGui::SetNextWindowPos(ImVec2(0,0));
     // 1. Show a simple window.
     // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
     {

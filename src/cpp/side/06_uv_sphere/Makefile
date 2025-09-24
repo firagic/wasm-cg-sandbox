@@ -52,16 +52,13 @@ FLAGS = $(LIBS) $(HEADERS) $(WEBGL_VER) $(USE_WASM) $(DYNLINK_SIDE) $(EXPORTS) $
 
 
 #### RULES 
-all: clean gen_dir $(ARTIFACT)
+all: clean gen_dir side_module 
 
-$(ARTIFACT): 
+side_module: 
 	$(CXX) $(INPUT) $(OUTPUT) $(FLAGS)
 
 clean:
 	rm -rf ${ARTIFACT_DIR} 
-
-run:
-	python -m http.server -d $(ARTIFACT_DIR)
 
 gen_dir:
 	mkdir ${ARTIFACT_DIR}
