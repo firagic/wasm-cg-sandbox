@@ -1,5 +1,6 @@
 #define __MODULE_INTERFACE__
 #define __GUI_EXTERN__
+#define GLM_ENABLE_EXPERIMENTAL
 #include "../../../hpp/globals.hpp"
 #include <unordered_map>
 
@@ -9,6 +10,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/quaternion.hpp>       // angleAxis, quat_cast, toMat4
 
 extern "C" int start_module(void *arg);
 extern "C" int run_module(void *arg);
@@ -41,6 +44,20 @@ public:
     
     GLFWwindow * window;
 
+    glm::vec3 uv_sphere_pos;
+    glm::vec3 uv_sphere_angle;
+    glm::vec3 uv_sphere_last_angle;
+    glm::quat uv_sphere_quaternion;
 
+    glm::ivec2 settings_pos;
+    glm::ivec2 settings_size;
+
+    glm::vec3 up_vector;
+    glm::vec3 right_vector;
+    glm::vec3 front_vector; 
+
+    float uv_sphere_scale;
+
+    bool init_done = false;
 
 };

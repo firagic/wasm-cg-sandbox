@@ -15,4 +15,5 @@ source $name/./emsdk_env.sh
 echo "\nCheck Emscripten Version"
 emcc -v
 
-make
+make all
+make deploy

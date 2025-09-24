@@ -3,6 +3,7 @@ precision highp float;
 
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 model;
 
 uniform float sectors;
 uniform float stacks;
@@ -44,5 +45,5 @@ void main() {
         cos(lat) * sin(lon)
     );
 
-    gl_Position = projection * view * vec4(pos, 1.0);
+    gl_Position = projection * view * model * vec4(pos, 1.0);
 }

@@ -3,6 +3,7 @@ precision highp float;
 
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 model;
 
 uniform float sectors;
 uniform float stacks;
@@ -38,12 +39,11 @@ void main() {
     float lat = mix(-HALF_PI, HALF_PI, vUV.y);
     float lon = mix(-PI, PI, vUV.x);
 
-    // Convert spherical coordinates (lat, lon) to Cartesian coordinates (x, y, z)
     vec3 pos = vec3(
         cos(lat) * cos(lon),
         sin(lat),
         cos(lat) * sin(lon)
     );
 
-    gl_Position = projection * view * vec4(pos, 1.0);
+    gl_Position = projection * view * model * vec4(pos, 1.0);
 }
