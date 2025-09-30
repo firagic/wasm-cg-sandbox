@@ -105,6 +105,7 @@ void Gui::draw_gui_data(void *arg)
 void Gui::show_list_window(void *arg)
 {
     AppState* state = (AppState*)arg;
+    ModuleState* module_state = (ModuleState*) state->module_state;
     // json* module_list_json_obj = (json*) state->module_list;
 
     // Begin a new ImGui window
@@ -132,10 +133,13 @@ void Gui::show_list_window(void *arg)
         {
             // Check if item is selected
             const bool is_selected = (state->selected_item == i);
-            
+
+            std::string item_label = state->module_names->at(i);
+            item_label += (is_selected && module_state->module_status == WAITING_FOR_WASM) ? " (loading...)" : "";
+
             // Render selectable item
             // if (ImGui::Selectable(state->module_names[i], is_selected))
-            if (ImGui::Selectable(state->module_names->at(i).c_str(), is_selected))
+            if (ImGui::Selectable(item_label.c_str(), is_selected))
             {
                 state->selected_item = i;
                 state->module_selected = true;

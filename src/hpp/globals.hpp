@@ -22,6 +22,41 @@ using json = nlohmann::json;
 #include "emjs.hpp"
 #include "module.hpp"
 
+enum ModuleStatus {
+    MODULE_NOT_SELECTED,
+    MODULE_NOT_INITIALIZED,
+    WAITING_FOR_WASM,
+    LINKING_FUNCTIONS,
+    SWITCHING_MODULE,
+    RUNNING_MODULE
+};
+
+typedef int (*start_module)(void*);
+
+typedef int (*run_module)(void*);
+
+typedef int (*end_module)(void*);
+
+typedef struct {
+    int module_idx; 
+    unsigned int VBO;
+    unsigned int VAO; 
+    unsigned int shaderProgram;
+
+    bool wasm_files_loaded;
+    bool wasm_functions_linked;
+    void * module_handle;
+    void * module_data;
+
+    start_module module_start;
+    run_module module_run;
+    end_module module_end;
+
+    ModuleStatus module_status;
+
+    void * app_state;
+
+} ModuleState;
 
 typedef struct {
     GLFWwindow *g_window;
@@ -52,3 +87,4 @@ typedef struct {
     // std::vector<void*> module_handles;
 
 } AppState;
+
