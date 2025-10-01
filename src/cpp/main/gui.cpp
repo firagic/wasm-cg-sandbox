@@ -134,8 +134,9 @@ void Gui::show_list_window(void *arg)
             // Check if item is selected
             const bool is_selected = (state->selected_item == i);
 
+            bool is_loading = (is_selected && module_state->module_status == WAITING_FOR_WASM);
             std::string item_label = state->module_names->at(i);
-            item_label += (is_selected && module_state->module_status == WAITING_FOR_WASM) ? " (loading...)" : "";
+            item_label += is_loading ? " (loading..." + std::to_string(state->module_resource_percent_loaded) + "%)" : "";
 
             // Render selectable item
             // if (ImGui::Selectable(state->module_names[i], is_selected))

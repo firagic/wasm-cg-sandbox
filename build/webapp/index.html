@@ -68,11 +68,15 @@
 
     
     var wasmLoadedIntoFS = false;
+    var currentIndex = -1;
+    var resourceCount = 0;
+    var percentageLoaded = 0;
     // async function loadWasmToFS(urlStr, filePathStr) {
     async function loadWasmToFS(module_index) {
       try {
         const baseUrl = "/modules/" + moduleListJson[module_index]["name"];
-        for (let i = 0;  i < moduleListJson[module_index]["data"]["asset"].length; i++ ) {
+        resourceCount = moduleListJson[module_index]["data"]["asset"].length;
+        for (let i = 0;  i < resourceCount; i++ ) {
           const fileStr = moduleListJson[module_index]["data"]["asset"][i];
           const url = baseUrl + "/" + fileStr;
           const filePath = fileStr;
@@ -80,9 +84,11 @@
           const buffer = await response.arrayBuffer();
           FS.createDataFile('/', filePath, new Uint8Array(buffer), true, true, true);
           console.log(`${fileStr} has been added to the Emscripten file system.`);
-
+          currentIndex = i;
+          percentageLoaded = Math.floor(((i + 1) / resourceCount) * 100);
         }
         wasmLoadedIntoFS = true;
+        currentIndex = -1;
        } catch (error) {
         console.error(`Error loading WASM file: ${error}`);
         wasmLoadedIntoFS = false;

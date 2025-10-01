@@ -86,5 +86,7 @@ typedef struct {
 
     // std::vector<void*> module_handles;
 
+    int module_resource_percent_loaded;
+
 } AppState;
 

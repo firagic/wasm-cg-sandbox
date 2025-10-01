@@ -56,6 +56,10 @@ namespace EMJS_WASM
         return wasmLoadedIntoFS;
     });
 
+    EM_JS(int, get_percent_completed, (), {
+        return (typeof percentageLoaded === "number") ? percentageLoaded : parseInt(percentageLoaded) || 0;
+    });
+
     // Wrapper function unload the wasm module
     // EM_JS(void, unload_wasm_js, (const char* filePathStr), {
     //     unlinkWasmFromFS(filePathStr);

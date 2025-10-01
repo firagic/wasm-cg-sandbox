@@ -111,6 +111,7 @@ void ModuleInterface::exec_module(void * arg)
         case WAITING_FOR_WASM:
             // Check if WASM files are loaded
             module_state->wasm_files_loaded = EMJS_WASM::check_wasm_loaded();
+            app_state->module_resource_percent_loaded = EMJS_WASM::get_percent_completed();
             break;
 
         case LINKING_FUNCTIONS:
