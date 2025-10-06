@@ -62,6 +62,8 @@ void ModuleInterface::close_module(void * arg)
     module_state->app_state = NULL;
     free(module_state);
     app_state->module_state = NULL;
+
+    reset_gl_state_between_modules();
 }
 
 
@@ -88,6 +90,7 @@ void ModuleInterface::process_module_status(void *arg)
     } else {
         module_state->module_status = RUNNING_MODULE;
     }
+
 }
 
 
@@ -95,8 +98,10 @@ void ModuleInterface::exec_module(void * arg)
 {
     AppState* app_state = (AppState*)arg;
     ModuleState* module_state = (ModuleState*)app_state->module_state;
-
+    
     process_module_status(app_state);
+
+    app_state->module_waiting_for_wasm = (module_state->module_status == WAITING_FOR_WASM);
 
     switch (module_state->module_status) {
         case MODULE_NOT_SELECTED:
@@ -130,6 +135,45 @@ void ModuleInterface::exec_module(void * arg)
             // Run the module
             module_state->module_run(module_state);
             break;
+        
+        default:
+            break;
     }
 }
 
+
+void ModuleInterface::reset_gl_state_between_modules() 
+{
+    // Framebuffer & viewport
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // glViewport(0, 0, fb_width, fb_height);
+    glDisable(GL_SCISSOR_TEST);
+
+    // Raster tests & masks
+    glDisable(GL_BLEND);
+    glDisable(GL_STENCIL_TEST);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_POLYGON_OFFSET_FILL);
+    glDisable(GL_SAMPLE_COVERAGE);
+    glDisable(GL_PRIMITIVE_RESTART_FIXED_INDEX); // <-- easy to forget; can nuke indexed draws
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
+    glDepthRangef(0.0f, 1.0f);
+
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+    // Clear to known values
+    glClearDepthf(1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    // Rebind clean program/VAO
+    glUseProgram(0);
+    glBindVertexArray(0);
+
+    // If the grid used textures/UBOs on specific units/bindings, it's cheap to zero a few:
+    glActiveTexture(GL_TEXTURE0); glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, 0);
+}
