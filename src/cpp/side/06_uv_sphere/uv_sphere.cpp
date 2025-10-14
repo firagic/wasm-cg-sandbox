@@ -18,19 +18,23 @@ int start_module(void *arg)
     moduleDataPtr->deltaTime = 0.0f;
     moduleDataPtr->lastFrame = 0.0f;
     moduleDataPtr->window = app_state->g_window;
+
     moduleDataPtr->lat_zone_count = 8;
     moduleDataPtr->long_zone_count = 12;
     moduleDataPtr->uv_sphere_pos = glm::vec3(0.0f, 0.0f, 0.0f);
     moduleDataPtr->uv_sphere_angle = glm::vec3(0.0f, 0.0f, 0.0f);
+    moduleDataPtr->uv_sphere_last_angle = glm::vec3(0.0f, 0.0f, 0.0f);
+    moduleDataPtr->uv_sphere_quaternion  = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+
     moduleDataPtr->settings_size = glm::vec2(340.0f, 240.0f);
     moduleDataPtr->settings_pos = glm::vec2(app_state->canvas_width - moduleDataPtr->settings_size.x, 0.0f);
     moduleDataPtr->uv_sphere_scale = 1.0f;
 
     moduleDataPtr->up_vector = glm::vec3(0.0f, 1.0f, 0.0f);
-
+    
     moduleDataPtr->infinity_plane_shader = new Shader("infinity_plane.vs", "infinity_plane.fs"); 
     moduleDataPtr->uv_sphere_shader = new Shader("uv_sphere.vs", "uv_sphere.fs"); 
-
+    
     return 0;
 }
 
