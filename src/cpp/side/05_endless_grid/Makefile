@@ -8,7 +8,7 @@ ARTIFACT_WASM = $(ARTIFACT_BASE).wasm
 ARTIFACT_JS = $(ARTIFACT_BASE).js
 ARTIFACT_HTML = htmls/index.html
 
-
+DEPLOY_PATH = ../../../../build/webapp_run/modules/${EXAMPLE_NUMBER}${ARTIFACT}/${ARTIFACT}.wasm
 
 ### MODULES
 MODULES = ./assets/

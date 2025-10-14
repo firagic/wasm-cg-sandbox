@@ -114,6 +114,11 @@ public:
                 Pitch = (Pitch < -89.0f) ? -89.0f : Pitch;
                 updateCameraVectors();
                 break;
+            case ROLL_CW:
+            case ROLL_CCW:
+            default:
+                break;
+        
         }
     }
 
