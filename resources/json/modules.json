@@ -4,5 +4,6 @@
     "03_lightings",
     "04_process_models",
     "05_endless_grid",
-    "06_uv_sphere"
+    "06_uv_sphere",
+    "07_gi_raytracer"
 ]

@@ -50,6 +50,8 @@ void App::loop(void *arg)
 int App::init_modules(void *arg) 
 {
     AppState* state = (AppState*)arg;
+    EMJS::init_runtime_state();
+    EMJS::read_modules_manifest();
     while (!EMJS::check_read_flag()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Sleep 100ms to avoid busy waiting
     }; // wait for modules.json to be done reading
@@ -122,6 +124,8 @@ void App::run(int argc, char **argv)
 {
     // Create the state and initialize it
     AppState* state = (AppState*)malloc(sizeof(AppState));
+    EMJS::init_runtime_state();
+    EMJS::resize_canvas();
     state->g_width = EMJS::canvas_get_width();
     state->g_height = EMJS::canvas_get_height();
     if (init(state) != 0)
@@ -134,4 +138,3 @@ void App::run(int argc, char **argv)
     quit();
     return;
 }
-

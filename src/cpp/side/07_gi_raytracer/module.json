@@ -1,0 +1,10 @@
+{
+    "title": "GI Raytracer",
+    "infos": "Simple shader raytracer with animated spheres and a ground plane.",
+    "asset": [
+       "gi_raytracer.wasm",
+       "gi_raytracer.vs",
+       "gi_raytracer.fs"
+    ]
+}
+

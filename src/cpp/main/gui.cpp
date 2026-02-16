@@ -22,11 +22,17 @@ int Gui::init_imgui(void *arg)
     ImGuiIO &io = ImGui::GetIO();
 
     // Load Fonts
-    io.Fonts->AddFontFromFileTTF("/resources/fonts/xkcd-script.ttf", 23.0f);
-    io.Fonts->AddFontFromFileTTF("/resources/fonts/xkcd-script.ttf", 18.0f);
-    io.Fonts->AddFontFromFileTTF("/resources/fonts/xkcd-script.ttf", 26.0f);
-    io.Fonts->AddFontFromFileTTF("/resources/fonts/xkcd-script.ttf", 32.0f);
-    io.Fonts->AddFontDefault();
+    const char *global_font_path = "/resources/fonts/pragmasevka-regular.ttf";
+    ImFont *font_18 = io.Fonts->AddFontFromFileTTF(global_font_path, 18.0f);
+    ImFont *font_13 = io.Fonts->AddFontFromFileTTF(global_font_path, 13.0f);
+    ImFont *font_21 = io.Fonts->AddFontFromFileTTF(global_font_path, 21.0f);
+    ImFont *font_27 = io.Fonts->AddFontFromFileTTF(global_font_path, 27.0f);
+
+    if (!font_18 || !font_13 || !font_21 || !font_27)
+    {
+        io.Fonts->Clear();
+        io.Fonts->AddFontDefault();
+    }
 
     // resize_canvas();
 
@@ -70,7 +76,7 @@ void Gui::draw_gui_data(void *arg)
         ImGui::SliderFloat("float", &f, -10.0f, 1000.0f);                   // Edit 1 float using a slider from 0.0f to 1.0f
         // ImGui::ColorEdit3("clear color", (float *)&state->clear_color);  // Edit 3 floats representing a color
 
-        ImGui::Checkbox("Demo Window", &state->show_demo_window); // Edit bools storing our windows open/close state
+        ImGui::Checkbox("ImGUI Window", &state->show_demo_window); // Edit bools storing our windows open/close state
         ImGui::Checkbox("Examples Window", &state->show_another_window);
 
         if (ImGui::Button("Button")) // Buttons return true when clicked (NB: most widgets return true when edited/activated)
@@ -78,7 +84,9 @@ void Gui::draw_gui_data(void *arg)
         ImGui::SameLine();
         ImGui::Text("counter = %d", counter);
 
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::Text("Frame time: %.3f ms", 1000.0f / ImGui::GetIO().Framerate);
+        ImGui::Text("Frame rate: %.1f FPS", ImGui::GetIO().Framerate);
+
     }
 
     // 2. Show another simple window. Using an explicit Begin/End pair to name window.
@@ -237,4 +245,3 @@ KEEPALIVE void igPushID(const char* str_id) { ImGui::PushID(str_id); }
 KEEPALIVE void igPopID(void) { ImGui::PopID(); }
 
 } // extern "C"
-
