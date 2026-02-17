@@ -204,6 +204,48 @@ float intersect_torus(vec3 ro, vec3 rd, vec3 center, vec2 radii, out vec3 normal
     return -1.0;
 }
 
+vec3 get_probe_center()
+{
+    vec3 c0 = vec3(-1.1, -0.1, -0.6);
+    vec3 c1 = vec3(0.2, 0.2, 0.2);
+    vec3 c2 = vec3(1.4, -0.2, 0.4);
+    float t_anim = 0.5 + 0.5 * sin(uTime * 0.8);
+    c1.y = mix(0.05, 0.65, t_anim);
+
+    vec3 box_center = vec3(-2.6, -0.2, 0.8 + 0.25 * sin(uTime * 0.6));
+    vec3 cyl_center = vec3(2.35, -0.05, -1.15);
+    vec3 torus_center = vec3(-0.15, -0.02 + 0.12 * sin(uTime * 0.9), -2.2);
+
+    vec3 path0 = c0;
+    vec3 path1 = c1;
+    vec3 path2 = c2;
+    vec3 path3 = box_center + vec3(0.0, 0.20, 0.0);
+    vec3 path4 = cyl_center + vec3(0.0, 0.10, 0.0);
+    vec3 path5 = torus_center;
+
+    float segment = fract(uTime * 0.08) * 6.0;
+    float u = fract(segment);
+    u = u * u * (3.0 - 2.0 * u);
+
+    vec3 from = path0;
+    vec3 to = path1;
+    if (segment < 1.0) {
+        from = path0; to = path1;
+    } else if (segment < 2.0) {
+        from = path1; to = path2;
+    } else if (segment < 3.0) {
+        from = path2; to = path3;
+    } else if (segment < 4.0) {
+        from = path3; to = path4;
+    } else if (segment < 5.0) {
+        from = path4; to = path5;
+    } else {
+        from = path5; to = path0;
+    }
+
+    return mix(from, to, u);
+}
+
 bool scene_hit(vec3 ro, vec3 rd, out HitInfo hit)
 {
     hit.t = kFar;
@@ -220,6 +262,8 @@ bool scene_hit(vec3 ro, vec3 rd, out HitInfo hit)
     float cyl_half_height = 0.85 + 0.12 * sin(uTime * 1.1);
     vec3 torus_center = vec3(-0.15, -0.02 + 0.12 * sin(uTime * 0.9), -2.2);
     vec2 torus_radii = vec2(0.82, 0.24);
+    vec3 probe_center = get_probe_center();
+
     vec3 n_tmp;
 
     float t = intersect_sphere(ro, rd, c0, 0.9);
@@ -271,6 +315,15 @@ bool scene_hit(vec3 ro, vec3 rd, out HitInfo hit)
         hit.t = t;
         hit.normal = n_tmp;
         hit.albedo = vec3(0.96, 0.62, 0.30);
+    }
+
+    t = intersect_sphere(ro, rd, probe_center, 0.40);
+    if (t > 0.0 && t < hit.t) {
+        found = true;
+        hit.t = t;
+        vec3 p = ro + rd * t;
+        hit.normal = normalize(p - probe_center);
+        hit.albedo = vec3(0.95, 0.95, 0.62);
     }
 
     t = intersect_ground(ro, rd, -1.0);

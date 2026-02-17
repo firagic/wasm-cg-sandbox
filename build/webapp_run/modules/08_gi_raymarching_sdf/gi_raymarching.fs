@@ -16,6 +16,8 @@ const float HIT_EPS = 0.001;
 const int MAX_STEPS = 176;
 const float MIN_STEP = 0.002;
 
+const float PROBE_SMOOTH_K = 0.36;
+
 float hash21(vec2 p)
 {
     p = fract(p * vec2(123.34, 456.21));
@@ -51,7 +53,59 @@ vec2 op_union(vec2 a, vec2 b)
     return (a.x < b.x) ? a : b;
 }
 
-vec2 map_objects(vec3 p)
+vec2 op_smooth_union_id(vec2 a, vec2 b, float k)
+{
+    float h = clamp(0.5 + 0.5 * (b.x - a.x) / k, 0.0, 1.0);
+    float d = mix(b.x, a.x, h) - k * h * (1.0 - h);
+    float m = (h > 0.5) ? a.y : b.y;
+    return vec2(d, m);
+}
+
+// --- Probe path reused by both mapping and shading ---
+vec3 get_probe_center()
+{
+    vec3 c0 = vec3(-1.1, -0.1, -0.6);
+    vec3 c1 = vec3(0.2, 0.2, 0.2);
+    vec3 c2 = vec3(1.4, -0.2, 0.4);
+    float t_anim = 0.5 + 0.5 * sin(uTime * 0.8);
+    c1.y = mix(0.05, 0.65, t_anim);
+
+    vec3 box_center = vec3(-2.6, -0.2, 0.8 + 0.25 * sin(uTime * 0.6));
+    vec3 cyl_center = vec3(2.35, -0.05, -1.15);
+    vec3 torus_center = vec3(-0.15, -0.02 + 0.12 * sin(uTime * 0.9), -2.2);
+
+    vec3 path0 = c0;
+    vec3 path1 = c1;
+    vec3 path2 = c2;
+    vec3 path3 = box_center + vec3(0.0, 0.20, 0.0);
+    vec3 path4 = cyl_center + vec3(0.0, 0.10, 0.0);
+    vec3 path5 = torus_center;
+
+    float segment = fract(uTime * 0.08) * 6.0;
+    float u = fract(segment);
+    u = u * u * (3.0 - 2.0 * u);
+
+    vec3 from = path0;
+    vec3 to = path1;
+    if (segment < 1.0) {
+        from = path0; to = path1;
+    } else if (segment < 2.0) {
+        from = path1; to = path2;
+    } else if (segment < 3.0) {
+        from = path2; to = path3;
+    } else if (segment < 4.0) {
+        from = path3; to = path4;
+    } else if (segment < 5.0) {
+        from = path4; to = path5;
+    } else {
+        from = path5; to = path0;
+    }
+
+    return mix(from, to, u);
+}
+
+// --- Base objects only (no probe) ---
+vec2 map_base(vec3 p)
 {
     vec2 hit = vec2(1e9, -1.0);
 
@@ -77,6 +131,18 @@ vec2 map_objects(vec3 p)
     hit = op_union(hit, vec2(sd_capped_cylinder_y(p - cyl_center, 0.46, cyl_half_height), 5.0));
     hit = op_union(hit, vec2(sd_torus(p - torus_center, torus_radii), 6.0));
 
+    return hit;
+}
+
+// --- Full scene: base + probe smooth-union ---
+vec2 map_objects(vec3 p)
+{
+    vec2 hit = map_base(p);
+
+    vec3 probe_center = get_probe_center();
+    vec2 probe = vec2(sd_sphere(p - probe_center, 0.40), 7.0);
+
+    hit = op_smooth_union_id(hit, probe, PROBE_SMOOTH_K);
     return hit;
 }
 
@@ -152,22 +218,13 @@ vec3 material_color(float mat, vec3 p)
         vec3 cB = vec3(0.52, 0.50, 0.44);
         return mix(cA, cB, checker);
     }
-    if (mat < 1.5) {
-        return vec3(0.95, 0.35, 0.28);
-    }
-    if (mat < 2.5) {
-        return vec3(0.35, 0.92, 0.55);
-    }
-    if (mat < 3.5) {
-        return vec3(0.35, 0.55, 0.98);
-    }
-    if (mat < 4.5) {
-        return vec3(0.92, 0.76, 0.32);
-    }
-    if (mat < 5.5) {
-        return vec3(0.38, 0.84, 0.93);
-    }
-    return vec3(0.96, 0.62, 0.30);
+    if (mat < 1.5) return vec3(0.95, 0.35, 0.28);
+    if (mat < 2.5) return vec3(0.35, 0.92, 0.55);
+    if (mat < 3.5) return vec3(0.35, 0.55, 0.98);
+    if (mat < 4.5) return vec3(0.92, 0.76, 0.32);
+    if (mat < 5.5) return vec3(0.38, 0.84, 0.93);
+    if (mat < 6.5) return vec3(0.96, 0.62, 0.30);
+    return vec3(0.95, 0.95, 0.62);
 }
 
 vec3 shade(vec3 ro, vec3 rd)
@@ -205,7 +262,36 @@ vec3 shade(vec3 ro, vec3 rd)
     float diffuse = ndotl * shadow;
     float spec = pow(max(dot(n, h), 0.0), 48.0) * shadow;
 
+    // --- Albedo (with probe↔base color blend in the smooth-union band) ---
     vec3 albedo = material_color(mat, p);
+
+    if (!use_plane) {
+        float k = PROBE_SMOOTH_K;
+
+        vec2 base = map_base(p);
+        float d_base = base.x;
+        float id_base = base.y;
+
+        vec3 probe_center = get_probe_center();
+        float d_probe = sd_sphere(p - probe_center, 0.40);
+        float id_probe = 7.0;
+
+        // Same blend factor as op_smooth_union_id
+        float hh = clamp(0.5 + 0.5 * (d_probe - d_base) / k, 0.0, 1.0);
+
+        // Apply blending mainly near the transition band
+        float band = hh * (1.0 - hh);             // 0..0.25
+        float w = smoothstep(0.0, 0.20, band);    // lower 0.20 -> stronger/wider
+
+        vec3 cA = material_color(id_base, p);
+        vec3 cB = material_color(id_probe, p);
+
+        // Matches distance blend: mix(probe, base, hh)
+        vec3 blended = mix(cB, cA, hh);
+
+        albedo = mix(albedo, blended, w);
+    }
+
     vec3 ambient = albedo * 0.16;
 
     vec3 bounce_dir = normalize(n + vec3(0.25, 0.85, 0.35));
