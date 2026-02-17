@@ -19,10 +19,12 @@ The project does not use tagged releases yet, so entries are organized by date a
 - Updated `08_gi_raymarching_sdf` SDF composition to smooth-union the probe sphere with scene geometry and blend material albedo in transition bands.
 - Updated `docs/project-structure.md` with `07_gi_raytracer` and `08_gi_raymarching_sdf` module listings.
 - Regenerated runtime outputs (`build/webapp/` and `build/webapp_run/`) to include current module manifests and shader/module assets.
+- Updated keyboard camera rotation in `07_gi_raytracer` and `08_gi_raymarching_sdf` to be time-based (`deltaTime`) instead of frame-based, with tuned turn sensitivity for a more consistent feel.
 
 ### Fixed
 
 - Adjusted module GL-state reset behavior in `src/cpp/main/module.cpp` by removing the forced `GL_PRIMITIVE_RESTART_FIXED_INDEX` disable.
+- Prevented first-frame camera timing spikes in `07_gi_raytracer` and `08_gi_raymarching_sdf` by initializing `last_frame` from `glfwGetTime()` during module startup.
 
 ## [2026-02-16]
 

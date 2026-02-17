@@ -14,7 +14,7 @@ int start_module(void *arg)
     module_data->camera = new Camera(glm::vec3(0.0f, 0.9f, 7.5f));
     module_data->window = app_state->g_window;
     module_data->delta_time = 0.0f;
-    module_data->last_frame = 0.0f;
+    module_data->last_frame = static_cast<float>(glfwGetTime());
 
     static const float quad_vertices[] = {
         -1.0f, -1.0f,

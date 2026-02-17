@@ -23,6 +23,7 @@ const float YAW = -90.0f;
 const float PITCH = 0.0f;
 const float SPEED = 2.5f;
 const float SENSITIVITY = 0.1f;
+const float KEYBOARD_TURN_BASE_FPS = 100.0f;
 const float ZOOM = 45.0f;
 
 class Camera
@@ -67,6 +68,7 @@ public:
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
+        float angular_velocity = MouseSensitivity * KEYBOARD_TURN_BASE_FPS * deltaTime;
         switch (direction) {
         case FORWARD:
             Position += Front * velocity;
@@ -87,20 +89,20 @@ public:
             Position -= Up * velocity;
             break;
         case YAW_LEFT:
-            Yaw -= MouseSensitivity;
+            Yaw -= angular_velocity;
             updateCameraVectors();
             break;
         case YAW_RIGHT:
-            Yaw += MouseSensitivity;
+            Yaw += angular_velocity;
             updateCameraVectors();
             break;
         case PITCH_UP:
-            Pitch += MouseSensitivity;
+            Pitch += angular_velocity;
             Pitch = (Pitch > 89.0f) ? 89.0f : Pitch;
             updateCameraVectors();
             break;
         case PITCH_DOWN:
-            Pitch -= MouseSensitivity;
+            Pitch -= angular_velocity;
             Pitch = (Pitch < -89.0f) ? -89.0f : Pitch;
             updateCameraVectors();
             break;
@@ -156,4 +158,3 @@ private:
 };
 
 #endif
-
