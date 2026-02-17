@@ -155,7 +155,6 @@ void ModuleInterface::reset_gl_state_between_modules()
     glDisable(GL_CULL_FACE);
     glDisable(GL_POLYGON_OFFSET_FILL);
     glDisable(GL_SAMPLE_COVERAGE);
-    glDisable(GL_PRIMITIVE_RESTART_FIXED_INDEX); // <-- easy to forget; can nuke indexed draws
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);

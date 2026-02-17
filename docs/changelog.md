@@ -4,6 +4,24 @@ All notable changes to this project are documented in this file.
 
 The project does not use tagged releases yet, so entries are organized by date and derived from commit history.
 
+## [2026-02-17]
+
+### Added
+
+- New `08_gi_raymarching_sdf` side module with a fullscreen SDF raymarching shader and keyboard camera controls.
+- `08_gi_raymarching_sdf` registration in module manifests (`resources/json/modules.json`, `build/webapp/modules.json`, and `build/webapp_run/modules.json`).
+- Additional primitives in `07_gi_raytracer` (`box`, `cylinder`, and `torus`) with animated transforms in the fullscreen raytracer scene.
+
+### Changed
+
+- Refactored `07_gi_raytracer` runtime shader setup to use the shared `Shader` helper instead of ad-hoc compile/link helpers and cached uniform locations.
+- Updated `docs/project-structure.md` with `07_gi_raytracer` and `08_gi_raymarching_sdf` module listings.
+- Regenerated runtime outputs (`build/webapp/` and `build/webapp_run/`) to include current module manifests and shader/module assets.
+
+### Fixed
+
+- Adjusted module GL-state reset behavior in `src/cpp/main/module.cpp` by removing the forced `GL_PRIMITIVE_RESTART_FIXED_INDEX` disable.
+
 ## [2026-02-16]
 
 ### Added

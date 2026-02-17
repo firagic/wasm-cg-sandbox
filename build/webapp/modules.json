@@ -5,5 +5,6 @@
     "04_process_models",
     "05_endless_grid",
     "06_uv_sphere",
-    "07_gi_raytracer"
+    "07_gi_raytracer",
+    "08_gi_raymarching_sdf"
 ]

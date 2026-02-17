@@ -1,4 +1,4 @@
-#include "gi_raytracer.hpp"
+#include "gi_raymarching.hpp"
 
 #include <iostream>
 
@@ -9,7 +9,7 @@ int start_module(void *arg)
     ModuleData *module_data = new ModuleData();
     state->module_data = module_data;
 
-    module_data->shader = new Shader("gi_raytracer.vs", "gi_raytracer.fs");
+    module_data->shader = new Shader("gi_raymarching.vs", "gi_raymarching.fs");
 
     module_data->camera = new Camera(glm::vec3(0.0f, 0.9f, 7.5f));
     module_data->window = app_state->g_window;
@@ -35,7 +35,7 @@ int start_module(void *arg)
     glBindVertexArray(0);
 
     if (!module_data->shader || module_data->shader->ID == 0) {
-        std::cerr << "Failed to create shader program for gi_raytracer." << std::endl;
+        std::cerr << "Failed to create shader program for gi_raymarching." << std::endl;
         return 0;
     }
 
@@ -48,7 +48,14 @@ int run_module(void *arg)
     AppState *app_state = (AppState *)state->app_state;
     ModuleData *module_data = (ModuleData *)state->module_data;
 
-    if (!module_data || module_data->shader == NULL || module_data->shader->ID == 0) {
+    if (!module_data) {
+        return 0;
+    }
+    if (module_data->shader == NULL || module_data->shader->ID == 0) {
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+        glClearColor(0.22f, 0.03f, 0.03f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
         return 0;
     }
 

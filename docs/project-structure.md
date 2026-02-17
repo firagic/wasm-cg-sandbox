@@ -51,6 +51,8 @@ Side-module demos compiled as `SIDE_MODULE` wasm files.
 - `04_process_model`: OBJ model loading demo
 - `05_endless_grid`: infinite grid demo
 - `06_uv_sphere`: procedural UV sphere demo
+- `07_gi_raytracer`: fullscreen shader raytracing demo
+- `08_gi_raymarching_sdf`: fullscreen SDF raymarching demo
 
 Note: each side module has its own `Makefile`, `compile.sh`, and (usually) `module.json`.
 
@@ -72,4 +74,3 @@ Generated artifacts.
 ## Third-party/vendor code in tree
 
 Several side modules include vendored code such as `glm`, `lodepng`, and `tinyobjloader` inside their module folders.
-

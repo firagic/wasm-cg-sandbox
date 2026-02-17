@@ -1,8 +1,8 @@
 #define __MODULE_INTERFACE__
 #include "../../../hpp/globals.hpp"
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "shader.hpp"

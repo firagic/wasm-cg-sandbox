@@ -1,0 +1,9 @@
+{
+    "title": "GI Raymarching SDF",
+    "infos": "SDF raymarching scene matching GI raytracer objects with hard shadows.",
+    "asset": [
+       "gi_raymarching.wasm",
+       "gi_raymarching.vs",
+       "gi_raymarching.fs"
+    ]
+}
