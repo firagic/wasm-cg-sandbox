@@ -69,28 +69,28 @@ void Gui::draw_gui_data(void *arg)
     ImGui::SetNextWindowPos(ImVec2(0,0));
     // 1. Show a simple window.
     // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
-    {
-        static float f = state->data; //0.0f;
-        static int counter = 0;
-        ImGui::Text("Hello, world!");                                       // Display some text 
-        ImGui::SliderFloat("float", &f, -10.0f, 1000.0f);                   // Edit 1 float using a slider from 0.0f to 1.0f
-        // ImGui::ColorEdit3("clear color", (float *)&state->clear_color);  // Edit 3 floats representing a color
+    // {
+    //     static float f = state->data; //0.0f;
+    //     static int counter = 0;
+    //     ImGui::Text("Hello, world!");                                       // Display some text 
+    //     ImGui::SliderFloat("float", &f, -10.0f, 1000.0f);                   // Edit 1 float using a slider from 0.0f to 1.0f
+    //     // ImGui::ColorEdit3("clear color", (float *)&state->clear_color);  // Edit 3 floats representing a color
 
-        ImGui::Checkbox("ImGUI Window", &state->show_demo_window); // Edit bools storing our windows open/close state
-        ImGui::Checkbox("Examples Window", &state->show_another_window);
+    //     ImGui::Checkbox("ImGUI Window", &state->show_demo_window); // Edit bools storing our windows open/close state
+    //     ImGui::Checkbox("Examples Window", &state->show_another_window);
 
-        if (ImGui::Button("Button")) // Buttons return true when clicked (NB: most widgets return true when edited/activated)
-            counter++;
-        ImGui::SameLine();
-        ImGui::Text("counter = %d", counter);
+    //     if (ImGui::Button("Button")) // Buttons return true when clicked (NB: most widgets return true when edited/activated)
+    //         counter++;
+    //     ImGui::SameLine();
+    //     ImGui::Text("counter = %d", counter);
 
-        ImGui::Text("Frame time: %.3f ms", 1000.0f / ImGui::GetIO().Framerate);
-        ImGui::Text("Frame rate: %.1f FPS", ImGui::GetIO().Framerate);
+    //     ImGui::Text("Frame time: %.3f ms", 1000.0f / ImGui::GetIO().Framerate);
+    //     ImGui::Text("Frame rate: %.1f FPS", ImGui::GetIO().Framerate);
 
-    }
+    // }
 
     // 2. Show another simple window. Using an explicit Begin/End pair to name window.
-    if (state->show_another_window)
+    // if (state->show_another_window)
     {
         // ImGui::Begin("Another Window", &state->show_another_window);
         // ImGui::Text("Hello from another window!");
@@ -101,11 +101,11 @@ void Gui::draw_gui_data(void *arg)
     }
 
     // 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
-    if (state->show_demo_window)
-    {
-        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
-        ImGui::ShowDemoWindow(&state->show_demo_window);
-    }
+    // if (state->show_demo_window)
+    // {
+    //     ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
+    //     ImGui::ShowDemoWindow(&state->show_demo_window);
+    // }
 
     // ImGui::Render();
 }
@@ -116,21 +116,21 @@ void Gui::show_list_window(void *arg)
     // json* module_list_json_obj = (json*) state->module_list;
 
     // Begin a new ImGui window
-    ImVec2 first_window_pos = ImGui::GetWindowPos();
-    ImVec2 first_window_size = ImGui::GetWindowSize();
+    // ImVec2 first_window_pos = ImGui::GetWindowPos();
+    // ImVec2 first_window_size = ImGui::GetWindowSize();
 
     // Calculate the position for the second window (below the first window)
-    ImVec2 second_window_pos = ImVec2(
-        first_window_pos.x,                      // Same X position
-        first_window_pos.y + first_window_size.y // Y position just below
-    );
+    // ImVec2 second_window_pos = ImVec2(
+    //     first_window_pos.x,                      // Same X position
+    //     first_window_pos.y + first_window_size.y // Y position just below
+    // );
 
     // Example window
-    ImGui::SetNextWindowPos(second_window_pos);
-    // ImGui::SetNextWindowSize(ImVec2(300, 200));   
-    ImGui::SetNextWindowSize(ImVec2(400, 300));
+    // ImGui::SetNextWindowPos(second_window_pos);
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);   
+    // ImGui::SetNextWindowSize(ImVec2(400, 300));
     ImGui::Begin("Examples");
-
 
     // Begin the ListBox
     if (ImGui::BeginListBox("ListBox", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
@@ -143,7 +143,7 @@ void Gui::show_list_window(void *arg)
 
             bool is_loading = (is_selected && state->module_waiting_for_wasm);
             std::string item_label = state->module_names->at(i);
-            item_label += is_loading ? " (loading..." + std::to_string(state->module_resource_percent_loaded) + "%)" : "";
+            item_label += is_loading ? " (..." + std::to_string(state->module_resource_percent_loaded) + "%)" : "";
 
             // Render selectable item
             // if (ImGui::Selectable(state->module_names[i], is_selected))
@@ -164,6 +164,8 @@ void Gui::show_list_window(void *arg)
     }
 
     // End the window
+
+    ImGui::Text("Frame rate: %.1f FPS", ImGui::GetIO().Framerate);
     ImGui::End();
 }
 

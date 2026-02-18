@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The project does not use tagged releases yet, so entries are organized by date and derived from commit history.
 
+## [2026-02-18]
+
+### Changed
+
+- Trimmed host GUI debug/demo controls and simplified the main panel defaults.
+
 ## [2026-02-17]
 
 ### Added
