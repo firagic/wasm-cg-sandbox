@@ -71,6 +71,7 @@ int App::init_modules(void *arg)
 
     state->module_list = (void*) module_list_json_object;
     state->module_selected = false;
+    state->selected_item = -1;
     return 0;
 
 }

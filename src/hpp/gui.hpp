@@ -19,6 +19,8 @@ namespace Gui
 
     void draw_gui_data(void *arg);
 
+    void show_landing_window(void *arg);
+
     void show_list_window(void *arg);
 
 }
@@ -102,4 +104,3 @@ void igPopID(void);
 }
 #endif
 #endif
-

@@ -6,6 +6,30 @@
     GUI implementation using Dear ImGUI
 */
 
+namespace {
+constexpr float kSidebarWidth = 300.0f;
+constexpr float kSidebarMinWidth = 220.0f;
+constexpr float kWindowGap = 12.0f;
+
+float clampf(float value, float min_value, float max_value)
+{
+    if (value < min_value) return min_value;
+    if (value > max_value) return max_value;
+    return value;
+}
+
+float maxf(float a, float b)
+{
+    return (a > b) ? a : b;
+}
+
+float sidebar_width_for_display(const ImGuiIO& io)
+{
+    const float proportional_width = io.DisplaySize.x * 0.36f;
+    return clampf(proportional_width, kSidebarMinWidth, kSidebarWidth);
+}
+}
+
 int Gui::init_imgui(void *arg)
 {
     GLFWwindow* g_window = (GLFWwindow*)arg;
@@ -61,58 +85,56 @@ void Gui::begin_gui_frame()
 void Gui::draw_gui_data(void *arg)
 {
     AppState* state = (AppState*)arg;
+    show_list_window(state);
+    if (!state->module_selected) {
+        show_landing_window(state);
+    }
+}
 
-    
-    // ImGui_ImplOpenGL3_NewFrame();
-    // ImGui_ImplGlfw_NewFrame();
-    // ImGui::NewFrame();
-    ImGui::SetNextWindowPos(ImVec2(0,0));
-    // 1. Show a simple window.
-    // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
-    // {
-    //     static float f = state->data; //0.0f;
-    //     static int counter = 0;
-    //     ImGui::Text("Hello, world!");                                       // Display some text 
-    //     ImGui::SliderFloat("float", &f, -10.0f, 1000.0f);                   // Edit 1 float using a slider from 0.0f to 1.0f
-    //     // ImGui::ColorEdit3("clear color", (float *)&state->clear_color);  // Edit 3 floats representing a color
+void Gui::show_landing_window(void *arg)
+{
+    (void)arg;
+    ImGuiIO& io = ImGui::GetIO();
+    const float sidebar_width = sidebar_width_for_display(io);
 
-    //     ImGui::Checkbox("ImGUI Window", &state->show_demo_window); // Edit bools storing our windows open/close state
-    //     ImGui::Checkbox("Examples Window", &state->show_another_window);
+    const float landing_x = sidebar_width + kWindowGap;
+    const float landing_w = maxf(220.0f, io.DisplaySize.x - landing_x - kWindowGap);
+    const float landing_h = maxf(180.0f, io.DisplaySize.y - (kWindowGap * 2.0f));
 
-    //     if (ImGui::Button("Button")) // Buttons return true when clicked (NB: most widgets return true when edited/activated)
-    //         counter++;
-    //     ImGui::SameLine();
-    //     ImGui::Text("counter = %d", counter);
+    ImGui::SetNextWindowPos(ImVec2(landing_x, kWindowGap), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(landing_w, landing_h), ImGuiCond_Always);
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar;
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::Begin("Landing", nullptr, window_flags);
 
-    //     ImGui::Text("Frame time: %.3f ms", 1000.0f / ImGui::GetIO().Framerate);
-    //     ImGui::Text("Frame rate: %.1f FPS", ImGui::GetIO().Framerate);
-
-    // }
-
-    // 2. Show another simple window. Using an explicit Begin/End pair to name window.
-    // if (state->show_another_window)
-    {
-        // ImGui::Begin("Another Window", &state->show_another_window);
-        // ImGui::Text("Hello from another window!");
-        // if (ImGui::Button("Close Me"))
-        //     state->show_another_window = false;
-        // ImGui::End();
-        show_list_window(state);
+    if (io.Fonts->Fonts.Size > 3) {
+        ImGui::PushFont(io.Fonts->Fonts[3]);
+    }
+    ImGui::TextUnformatted("Computer Graphics Sandbox");
+    if (io.Fonts->Fonts.Size > 3) {
+        ImGui::PopFont();
     }
 
-    // 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
-    // if (state->show_demo_window)
-    // {
-    //     ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
-    //     ImGui::ShowDemoWindow(&state->show_demo_window);
-    // }
+    ImGui::Separator();
+    ImGui::TextWrapped("Personal playground for real-time rendering experiments in WebAssembly.");
+    ImGui::Spacing();
+    ImGui::BulletText("Shader studies: raytracing and SDF raymarching");
+    ImGui::BulletText("Interactive module switching at runtime");
+    ImGui::BulletText("ImGui tooling for quick iteration");
 
-    // ImGui::Render();
+    ImGui::Spacing();
+    ImGui::TextWrapped("Select an example from the sidebar to start.");
+
+    ImGui::End();
+    ImGui::PopStyleVar();
 }
 
 void Gui::show_list_window(void *arg)
 {
     AppState* state = (AppState*)arg;
+    ImGuiIO& io = ImGui::GetIO();
+    const float sidebar_width = sidebar_width_for_display(io);
+    ImGuiWindowFlags window_flags = 0;
     // json* module_list_json_obj = (json*) state->module_list;
 
     // Begin a new ImGui window
@@ -127,10 +149,15 @@ void Gui::show_list_window(void *arg)
 
     // Example window
     // ImGui::SetNextWindowPos(second_window_pos);
-    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);   
-    // ImGui::SetNextWindowSize(ImVec2(400, 300));
-    ImGui::Begin("Examples");
+    if (!state->module_selected) {
+        ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(sidebar_width, io.DisplaySize.y), ImGuiCond_Always);
+        window_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse;
+    } else {
+        ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(sidebar_width, 300), ImGuiCond_FirstUseEver);
+    }
+    ImGui::Begin("Examples", nullptr, window_flags);
 
     // Begin the ListBox
     if (ImGui::BeginListBox("ListBox", ImVec2(-FLT_MIN, 10 * ImGui::GetTextLineHeightWithSpacing())))
@@ -161,6 +188,14 @@ void Gui::show_list_window(void *arg)
             
         }
         ImGui::EndListBox();
+    }
+
+    if (state->module_selected) {
+        if (ImGui::Button("Home", ImVec2(-FLT_MIN, 0.0f))) {
+            state->module_selected = false;
+            state->selected_item = -1;
+        }
+        ImGui::Spacing();
     }
 
     // End the window

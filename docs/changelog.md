@@ -8,7 +8,7 @@ The project does not use tagged releases yet, so entries are organized by date a
 
 ### Changed
 
-- Trimmed host GUI debug/demo controls and simplified the main panel defaults.
+- Reworked host UI into a two-pane home layout: `Examples` sidebar plus separate `Landing` window.
 
 ## [2026-02-17]
 

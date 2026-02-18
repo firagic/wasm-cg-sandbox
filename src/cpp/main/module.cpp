@@ -11,6 +11,12 @@ void ModuleInterface::open_module(void * arg)
     module_state->module_idx = app_state->selected_item;
     module_state->wasm_files_loaded = false;
     module_state->wasm_functions_linked = false;
+    module_state->module_handle = NULL;
+    module_state->module_data = NULL;
+    module_state->module_start = NULL;
+    module_state->module_run = NULL;
+    module_state->module_end = NULL;
+    module_state->module_status = MODULE_NOT_INITIALIZED;
     app_state->module_state = module_state;
     module_state->app_state = app_state;
     EMJS_WASM::load_wasm_js(app_state->selected_item);
@@ -52,13 +58,20 @@ void ModuleInterface::close_module(void * arg)
 {
     AppState * app_state = (AppState*) arg;
     ModuleState* module_state = (ModuleState*) app_state->module_state;
+    if (module_state == NULL) {
+        return;
+    }
+
     EMJS_WASM::unload_wasm_js(module_state->module_idx);
-    dlclose(module_state->module_handle);
+    if (module_state->module_handle != NULL) {
+        dlclose(module_state->module_handle);
+    }
     module_state->wasm_files_loaded = false;
     module_state->wasm_functions_linked = false;
     module_state->module_start = NULL;
     module_state->module_run = NULL;
     module_state->module_end = NULL;
+    module_state->module_handle = NULL;
     module_state->app_state = NULL;
     free(module_state);
     app_state->module_state = NULL;
@@ -72,12 +85,14 @@ void ModuleInterface::process_module_status(void *arg)
     AppState* app_state = (AppState*)arg;
     ModuleState* module_state = (ModuleState*)app_state->module_state;
 
-    if (!app_state->module_selected) {
-        module_state->module_status = MODULE_NOT_SELECTED;
+    if (module_state == NULL) {
+        return;
+    }
 
-    } else if (module_state == nullptr) {
-        module_state->module_status = MODULE_NOT_INITIALIZED;
-        
+    if (!app_state->module_selected) {
+        // Returning to home should unload currently active module files/data.
+        module_state->module_status = SWITCHING_MODULE;
+
     } else if (!module_state->wasm_files_loaded) {
         module_state->module_status = WAITING_FOR_WASM;
     
@@ -98,6 +113,15 @@ void ModuleInterface::exec_module(void * arg)
 {
     AppState* app_state = (AppState*)arg;
     ModuleState* module_state = (ModuleState*)app_state->module_state;
+
+    if (module_state == NULL) {
+        app_state->module_waiting_for_wasm = false;
+        app_state->module_resource_percent_loaded = 0;
+        if (app_state->module_selected) {
+            open_module(app_state);
+        }
+        return;
+    }
     
     process_module_status(app_state);
 
@@ -122,12 +146,16 @@ void ModuleInterface::exec_module(void * arg)
         case LINKING_FUNCTIONS:
             // Link functions and start module
             link_functions(app_state);
-            module_state->module_start(module_state);
+            if (module_state->module_start != NULL) {
+                module_state->module_start(module_state);
+            }
             break;
 
         case SWITCHING_MODULE:
             // Close current module and prepare to switch
-            module_state->module_end(module_state);
+            if (module_state->module_end != NULL) {
+                module_state->module_end(module_state);
+            }
             close_module(app_state);
             break;
 
